@@ -1,0 +1,9 @@
+# config/routes.yaml
+
+about:
+    path: /a-propos
+    controller: App\Controller\PagesController::about
+
+
+
+
