@@ -32,25 +32,53 @@ class ArticleController extends AbstractController {
             'articles' => $articles
         ]);
     }
+
     /**
-     * Affficher un article
-     * 
-     * @Route("/{article}", name="article_show", methods={"GET"})
+     * @Route("/search", name="article_search", methods={"GET"})
      */
-    public function show() {
+    public function search(Request $request) {
+
+        $search = $request->query->get('q');
+
+        $articles = $this->articleRepository->findByContent($search);
+
+        return $this->render('article/index.html.twig', [
+            'articles' => $articles
+        ]);
     }
+
+
+
     /**
-     * Afficher le formulaire de création d'un article
-     * 
      * @Route("/create", name="article_create", methods={"GET"})
      */
     public function create() {
+        return $this->render('article/create.html.twig');
     }
+
     /**
-     * Traiter le formulaire de création d'un article
-     * 
      * @Route("/", name="article_new", methods={"POST"})
      */
-    public function new() {
+    public function new(Request $request) {
+
+        $article = new Article;
+        $article->setTitle($request->request->get('title'));
+        $article->setContent($request->request->get('content'));
+
+        $manager = $this->getDoctrine()->getManager();
+        $manager->persist($article);
+        $manager->flush();
+
+        return $this->redirectToRoute("article_index");
+
+    }
+    
+    /**
+     * @Route("/{article}", name="article_show", methods={"GET"})
+     */
+    public function show(Article $article) {
+        return $this->render('article/show.html.twig', [
+            'article' => $article
+        ]);
     }
 }
